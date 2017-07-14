@@ -2,6 +2,7 @@
 
 {% block head %}
     {{ super() }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
 {% endblock %}
 
@@ -49,9 +50,7 @@
                 {% for project in projects%}
                     {{ project.description|safe }}
                     {% if project.image_url %}
-                        <div class="pure-g">
-                            <img class="pure-img-responsive" src="{{ project.image_url }}" alt="{{ project.title }}">
-                        </div>
+                        <img style="max-width:100%;" src="{{ project.image_url }}" alt="{{ project.title }}">
                     {% endif %}
                 {% endfor %}
             {% endfor %}
@@ -67,7 +66,7 @@
                     {% endif %}
                 </div>
                 <div class="pure-u-1-3">
-                    <div class="social-share" data-sites="weibo,wechat,qq,qzone,douban,facebook"></div>
+                    <div class="social-share" data-sites="weibo,wechat" align="center"></div>
                 </div>
                 <div class="pure-u-1-3">
                     {% if content_type == 'category' and current_page < page_count %}
@@ -88,6 +87,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/share.min.css') }}">
 <script src="{{ url_for('static', filename='js/social-share.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/highlight.pack.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
 <script >hljs.initHighlightingOnLoad();</script>
 
 {% endblock %}

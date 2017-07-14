@@ -2,6 +2,7 @@
 
 {% block head %}
     {{ super() }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/grids-responsive-min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css')}}">
 {% endblock %}
@@ -50,12 +51,13 @@
 
                 <ul class="pricing-table-list">
                     <li>
-                    <label>选择一期：</label>
+                    <label>选择一期：
                         <select id="volume" onchange="get_select(this.id)">
                             {% for volume in volumes %}
                                 <option>{{ volume.name }}</option>
                             {% endfor %}
                         </select>
+                    </label>
                     </li>
                     <li>
                         每月 28 号发布最新一期
@@ -78,12 +80,13 @@
 
                 <ul class="pricing-table-list">
                     <li>
-                    <label>选择分类：</label>
+                    <label>选择分类：
                         <select id="category" onchange="get_select(this.id)">
                             {% for category in categorys %}
                                 <option>{{ category.name }}</option>
                             {% endfor %}
                         </select>
+                    </label>
                     </li>
                     <li>
                         语言不能成为学习的壁垒

@@ -2,6 +2,7 @@
 
 {% block head %}
     {{ super() }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
 {% endblock %}
 
@@ -83,4 +84,8 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
 {% endblock %}
