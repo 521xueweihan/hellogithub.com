@@ -1,7 +1,11 @@
 # hellogithub.com
-本项目为 [hellogithub.com](https://hellogithub.com) 网站。
+<p align="center">
+  <img src="https://github.com/521xueweihan/hellogithub.com/blob/master/hellogithub.gif">
+</p>
 
 ## 简介
+本项目为 [hellogithub.com](https://hellogithub.com) 网站的源码。
+
 既然做的是开源的项目推荐，那么索性就把该网站也开源了。
 
 同时，因为很多新手想加入到开源社区，然后不知道如何开始，接下来我会基于本项目（Flask Web开发）
