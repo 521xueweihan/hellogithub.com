@@ -67,8 +67,8 @@ config.py
 .DS_Store
 
 # db file
-*.db
 db_backup/
+hellogithub.db
 
 # log file
 hellogithub.log

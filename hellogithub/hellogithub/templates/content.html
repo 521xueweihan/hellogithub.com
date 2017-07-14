@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
+{% endblock %}
+
+{% block content %}
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="/">Hello GitHub</a>
+
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+                <li class="menu-item-divided pure-menu-selected">
+                    <a href="{{ menu_url }}" class="pure-menu-link">内容</a>
+                </li>
+                <li class="pure-menu-item"><a href="/about/?url={{ menu_url }}" class="pure-menu-link">关于</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="header">
+            <h1>{{ page_title }}</h1>
+            <h2>兴趣是最好的老师，Hello GitHub 就是帮你找到编程的兴趣。</h2>
+        </div>
+
+        <div class="content">
+
+        {% if content_type == 'category' %}
+            {% for project in projects %}
+                <h2 class="content-subhead"><a target="_blank" href="{{ project.project_url }}">{{ project.title }}</a></h2>
+                {{ project.description|safe }}
+                {% if project.image_url %}
+                    <img style="max-width:100%;" src="{{ project.image_url }}" alt="{{ project.title }}">
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% for projects in contents %}
+                <h2 class="content-subhead">{{ projects.pop(0) }}</h2>
+                {% for project in projects%}
+                    {{ project.description|safe }}
+                    {% if project.image_url %}
+                        <div class="pure-g">
+                            <img class="pure-img-responsive" src="{{ project.image_url }}" alt="{{ project.title }}">
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        <hr/>
+            <div class="pure-g">
+                {# 只有分类支持翻页 #}
+                <div class="pure-u-1-3">
+                    {% if content_type == 'category' and 1< current_page <= page_count %}
+                    <div id="last">
+                        <a class="button-small pure-button pure-button-primary" href="/category/{{ category_url }}/?page={{ current_page-1 }}">上一页</a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="pure-u-1-3">
+                    <div class="social-share" data-sites="weibo,wechat,qq,qzone,douban,facebook"></div>
+                </div>
+                <div class="pure-u-1-3">
+                    {% if content_type == 'category' and current_page < page_count %}
+                    <div id="next">
+                        <a class="button-small pure-button pure-button-primary" href="/category/{{ category_url }}/?page={{ current_page+1 }}">下一页</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/atom-one-light.min.css') }}">
+<!-- share.css -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/share.min.css') }}">
+<script src="{{ url_for('static', filename='js/social-share.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/highlight.pack.js') }}"></script>
+<script >hljs.initHighlightingOnLoad();</script>
+
+{% endblock %}
