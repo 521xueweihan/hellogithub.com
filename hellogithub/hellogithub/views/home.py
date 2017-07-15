@@ -70,14 +70,14 @@ def sign_up():
         except Exception as e:
             logger.error(e)
             return abort(500)
-
+        
         github_user_json = github_user_response.json()
         github_user_id = github_user_json.get('id')
-
+        
         name = github_user_json.get('name') or github_user_json.get('login')
         avatar_url = github_user_json.get('avatar_url')
         email = github_user_json.get('email')
-
+        
         try:
             user_object = User.get(User.uuid == github_user_id)
             # update user info
@@ -138,7 +138,15 @@ def volume(input_volume):
         .where(Volume.name == input_volume, Volume.status == 1,
                Content.status == 1)
     category_list = Category.select().order_by(Category.name)
-
+    
+    volume_objects = Volume.select().where(Volume.status == 1).order_by(
+        Volume.name.desc())
+    volume_name_list = [fi_volume_obj.name for fi_volume_obj in volume_objects]
+    if input_volume in volume_name_list:
+        current_volume_index = volume_name_list.index(input_volume)
+    else:
+        current_volume_index = -1
+    
     contents = []
     index_num = 0
     for category_object in category_list:
@@ -157,9 +165,12 @@ def volume(input_volume):
                 projects.append(fi_content)
         if not len(projects) == 1:
             contents.append(projects)
-
+    
     return render_template('content.html', contents=contents,
                            content_type='volume', menu_url=menu_url,
+                           volume_name_list=volume_name_list,
+                           volume_name_len=len(volume_name_list),
+                           current_volume_index=current_volume_index,
                            page_title=u'第 {vol} 期'.format(vol=input_volume))
 
 
