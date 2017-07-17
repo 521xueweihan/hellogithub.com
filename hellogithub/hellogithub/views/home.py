@@ -46,8 +46,8 @@ def home():
                            categorys=category_objects, volumes=volume_objects)
 
 
-@app.route('/sign/up/')
-def sign_up():
+@app.route('/sign/in/')
+def sign_in():
     """
     登陆通过 GitHub OAuth 实现
     参考文档：
