@@ -39,11 +39,24 @@ $(document).ready(function() {
             var contents = "";
             $.each(data.message, function(i, item){
                 i = i+1;
+                var content_status = '';
+                if (item.status == 1) {
+                    content_status = "<td><span style=\'color: #33b045\'>"+
+                                     "已上线"+
+                                     "</span></td>"
+                }
+                else {
+                    content_status = "<td><span style=\'color: red\'>"+
+                                     "未上线"+
+                                     "</span></td>"
+                }
+
                 contents += "<tr>"+
                     "<td>"+i+"</td>" +
                     "<td id=\"project-title\">"+item.title+"</td>" +
                     "<td>"+item.category.name+"</td>" +
                     "<td>"+item.volume.name+"</td>" +
+                    content_status +
                     "<td><button type=\"button\" id=\"edit-project-button\" value=\""+ item.id +"\" class=\"button-warning button-xsmall pure-button\">编辑</button>" +
                     "&nbsp;" +
                     "<button type=\"button\" id=\"delete-project-submit\" value=\""+ item.id +"\" class=\"button-error button-xsmall pure-button\">删除</button></td>" +
@@ -56,6 +69,7 @@ $(document).ready(function() {
                         "<th>Title</th>"+
                         "<th>Category</th>"+
                         "<th>Vol.</th>"+
+                        "<th>状态</th>"+
                         "<th>操作</th>"+
                     "</tr>"+
                 "</thead>"+
@@ -84,6 +98,17 @@ $(document).ready(function() {
             }
 
             var item = data.message;
+            var content_status = '';
+            if (item.status == 1) {
+                content_status = "<td><span style=\'color: #33b045\'>"+
+                                 "已上线"+
+                                 "</span></td>"
+            }
+            else {
+                content_status = "<td><span style=\'color: red\'>"+
+                                 "未上线"+
+                                 "</span></td>"
+            }
             $("#result").html(
                 "<table class=\"pure-table\">"+
                 "<thead>"+
@@ -92,6 +117,7 @@ $(document).ready(function() {
                         "<th>Title</th>"+
                         "<th>Category</th>"+
                         "<th>Vol.</th>"+
+                        "<th>状态</th>"+
                         "<th>操作</th>"+
                     "</tr>"+
                 "</thead>"+
@@ -101,6 +127,7 @@ $(document).ready(function() {
                         "<td id=\"project-title\">"+item.title+"</td>" +
                         "<td>"+item.category.name+"</td>" +
                         "<td>"+item.volume.name+"</td>" +
+                        content_status +
                         "<td><button type=\"button\" id=\"edit-project-button\" value=\""+ item.id +"\" class=\"button-warning button-xsmall pure-button\">编辑</button>" +
                         "&nbsp;" +
                         "<button type=\"button\" id=\"delete-project-submit\" value=\""+ item.id +"\" class=\"button-error button-xsmall pure-button\">删除</button></td>" +

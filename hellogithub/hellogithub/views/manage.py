@@ -5,11 +5,11 @@
 #   Date    :   17/6/12 上午10:49
 #   Desc    :   管理后台
 import functools
+from datetime import datetime
 
 from flask import render_template, request, jsonify, session, abort
 from peewee import DoesNotExist, IntegrityError
 from playhouse.shortcuts import model_to_dict
-
 
 from hellogithub.models import Category, Volume, Content
 from tools import models_to_dicts, make_image_path, make_description, \
@@ -26,6 +26,7 @@ def login(f):
         else:
             logger.warning('Guest request fail.')
             abort(404)
+    
     return warp_fun
 
 
@@ -40,14 +41,14 @@ def project_list():
     subset = request.args.get('subset', '')
     
     if select_type == 'volume' and subset:
-        content_objects = Content.select()\
-            .join(Volume)\
+        content_objects = Content.select() \
+            .join(Volume) \
             .where(Volume.id == subset) \
             .order_by(Content.category.name)
         content_dicts = models_to_dicts(content_objects)
     elif select_type == 'category' and subset:
-        content_objects = Content.select()\
-            .join(Category)\
+        content_objects = Content.select() \
+            .join(Category) \
             .where(Category.id == subset) \
             .order_by(Content.volume.name)
         content_dicts = models_to_dicts(content_objects)
@@ -82,7 +83,7 @@ def manage_content():
     if request.method == 'GET':
         category_objects = Category.select().order_by(Category.name)
         volume_objects = Volume.select().order_by(Volume.name.desc())
-    
+        
         project_id = request.args.get('project_id')
         if project_id:
             # 展示项目信息，用于更新
@@ -126,7 +127,8 @@ def manage_content():
             'category': category_object,
             'project_url': project_url,
             'image_path': image_path,
-            'description': description
+            'description': description,
+            'update_time': datetime.now()
         }
         # 更新项目信息
         if request.method == 'PUT':
@@ -172,7 +174,8 @@ def manage_category():
     if request.method == 'GET':
         category_id = request.args.get('category_id')
         if category_id:
-            category_object = Category.select().where(Category.id == category_id).get()
+            category_object = Category.select().where(
+                Category.id == category_id).get()
             result_dict = model_to_dict(category_object)
             return jsonify(code=200, message=result_dict)
         else:
@@ -187,10 +190,12 @@ def manage_category():
             try:
                 Category.create(name=category_name)
                 return jsonify(code=200,
-                               message=u'新增分类：{name}，成功'.format(name=category_name))
+                               message=u'新增分类：{name}，成功'.format(
+                                   name=category_name))
             except IntegrityError:
                 return jsonify(code=400,
-                               message=u'新增分类失败：{category_name} 已存在'.format(category_name=category_name))
+                               message=u'新增分类失败：{category_name} 已存在'.format(
+                                   category_name=category_name))
         else:
             return jsonify(code=400, message=u'新增分类失败：分类名不能为空')
     elif request.method == 'PUT':
@@ -202,8 +207,9 @@ def manage_category():
                            message=u'更新分类失败：category_name 不能为空')
         else:
             try:
-                Category.update(name=category_name).where(
-                    Category.id == category_id).execute()
+                Category.update(name=category_name,
+                                update_time=datetime.now()) \
+                    .where(Category.id == category_id).execute()
                 return jsonify(code=200,
                                message=u'更新分类 {name} 信息成功'.format(
                                    name=category_name))
@@ -216,8 +222,8 @@ def manage_category():
         category_id = request.form.get('category_id')
         category_name = request.form.get('category_name')
         try:
-            content_query = Content.select()\
-                .join(Category)\
+            content_query = Content.select() \
+                .join(Category) \
                 .where(Category.id == category_id).get()
             project_url = content_query.project_url
             return jsonify(code=400, message=u'删除分类失败：{project_url}项目所属'
@@ -253,10 +259,12 @@ def manage_volume():
             try:
                 Volume.create(name=volume_name)
                 return jsonify(code=200,
-                               message=u'新增一期：{name}，成功'.format(name=volume_name))
+                               message=u'新增一期：{name}，成功'.format(
+                                   name=volume_name))
             except IntegrityError:
                 return jsonify(code=400,
-                               message=u'新增一期失败：{name} 已存在'.format(name=volume_name))
+                               message=u'新增一期失败：{name} 已存在'.format(
+                                   name=volume_name))
         else:
             return jsonify(code=400, message=u'新增一期失败：volume_name 不能为空')
     elif request.method == 'PUT':
@@ -268,8 +276,8 @@ def manage_volume():
                            message=u'更新 Vol. 失败：volume_name 不能为空')
         else:
             try:
-                Volume.update(name=volume_name).where(
-                    Volume.id == volume_id).execute()
+                Volume.update(name=volume_name, update_time=datetime.now()) \
+                    .where(Volume.id == volume_id).execute()
                 return jsonify(code=200,
                                message=u'更新 Vol. {name} 信息成功'.format(
                                    name=volume_name))
@@ -282,8 +290,8 @@ def manage_volume():
         volume_id = request.form.get('volume_id')
         volume_name = request.form.get('volume_name')
         try:
-            content_query = Content.select()\
-                .join(Volume)\
+            content_query = Content.select() \
+                .join(Volume) \
                 .where(Volume.id == volume_id).get()
             project_url = content_query.project_url
             return jsonify(code=400, message=u'删除 Vol. 失败：{project_url}项目所属'
@@ -300,12 +308,14 @@ def manage_volume():
 def publish_volume():
     volume_id = request.form.get('volume_id')
     volume_object = Volume.select().where(Volume.id == volume_id).get()
-    content_objects = Content.select().join(Volume).where(Volume.id == volume_object.id)
-
+    content_objects = Content.select().join(Volume).where(
+        Volume.id == volume_object.id)
+    
     if volume_object.status == 1:
         with database.transaction():
             for content_object in content_objects:
                 content_object.status = 0
+                content_object.update_time = datetime.now()
                 content_object.save()
             volume_object.status = 0
             volume_object.save()
@@ -315,6 +325,7 @@ def publish_volume():
         with database.transaction():
             for content_object in content_objects:
                 content_object.status = 1
+                content_object.update_time = datetime.now()
                 content_object.save()
             volume_object.status = 1
             volume_object.save()

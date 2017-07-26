@@ -51,6 +51,9 @@
 
                 <ul class="pricing-table-list">
                     <li>
+                        每月 28 号发布最新一期
+                    </li>
+                    <li>
                     <label>选择一期：
                         <select id="volume" onchange="get_select(this.id)">
                             {% for volume in volumes %}
@@ -58,9 +61,6 @@
                             {% endfor %}
                         </select>
                     </label>
-                    </li>
-                    <li>
-                        每月 28 号发布最新一期
                     </li>
                 </ul>
 
@@ -79,21 +79,25 @@
                 </div>
 
                 <ul class="pricing-table-list">
+                   <li>
+                        编程语言不是学习和进阶的壁垒
+                    </li>
                     <li>
                     <label>选择分类：
                         <select id="category" onchange="get_select(this.id)">
                             {% for category in categorys %}
-                                <option>{{ category.name }}</option>
+                                {% if category.name == select_category.name %}
+                                    <option selected>{{ category.name }}</option>
+                                {% else %}
+                                    <option>{{ category.name }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </label>
                     </li>
-                    <li>
-                        语言不能成为学习的壁垒
-                    </li>
                 </ul>
 
-                <a id='category-button' class="button-choose pure-button" href="/category/{{ categorys[0].name }}/">查看</a>
+                <a id='category-button' class="button-choose pure-button" href="/category/{{ select_category.name }}/">查看</a>
             </div>
         </div>
         {# 推荐项目 #}

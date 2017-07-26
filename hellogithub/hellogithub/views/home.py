@@ -4,6 +4,7 @@
 #   Author  :   XueWeiHan
 #   Date    :   17/6/12 上午10:49
 #   Desc    :   首页和关于页面
+import random
 from urllib import quote, urlencode
 
 import requests
@@ -32,17 +33,18 @@ def home():
         .where(Content.status == 1) \
         .group_by(Category.id) \
         .order_by(Category.name)
-    volume_objects = Volume.select().where(Volume.status == 1).order_by(
-        Volume.name.desc())
+    volume_objects = Volume.select(Volume.name).where(Volume.status == 1) \
+        .order_by(Volume.name.desc())
     content_objects = Content.select().where(Content.status == 1)
     return render_template('home.html', user_info=user_info,
                            category_count=len(category_objects),
                            volume_count=len(volume_objects),
                            page_title=u'GitHub 上入门级、有趣、实用的开源项目',
                            project_count=len(content_objects),
-                           last_volume_num=max(
-                               [volume_object.name for volume_object in
-                                   volume_objects]),
+                           last_volume_num=max([volume_object.name
+                                                   for volume_object in
+                                                   volume_objects]),
+                           select_category=random.choice(category_objects),
                            categorys=category_objects, volumes=volume_objects)
 
 
@@ -140,7 +142,7 @@ def volume(input_volume):
     category_list = Category.select().order_by(Category.name)
     
     volume_objects = Volume.select().where(Volume.status == 1).order_by(
-        Volume.name.desc())
+        Volume.name.asc())
     volume_name_list = [fi_volume_obj.name for fi_volume_obj in volume_objects]
     if input_volume in volume_name_list:
         current_volume_index = volume_name_list.index(input_volume)
@@ -155,17 +157,16 @@ def volume(input_volume):
             if fi_content.category.name == category_object.name:
                 index_num += 1
                 title_string = u'{num}、<a target="_blank" href="{url}">' \
-                               u'{title}</a>：'\
-                               .format(num=index_num,
-                                       title=fi_content.title,
-                                       url=fi_content.project_url)\
+                               u'{title}</a>：' \
+                                   .format(num=index_num,
+                                           title=fi_content.title,
+                                           url=fi_content.project_url) \
                                + fi_content.description
                 fi_content.description = markdown2html(title_string)
                 fi_content.image_url = make_image_url(fi_content.image_path)
                 projects.append(fi_content)
         if not len(projects) == 1:
             contents.append(projects)
-    
     return render_template('content.html', contents=contents,
                            content_type='volume', menu_url=menu_url,
                            volume_name_list=volume_name_list,
