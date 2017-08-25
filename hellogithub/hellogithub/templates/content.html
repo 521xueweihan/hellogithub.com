@@ -4,6 +4,9 @@
     {{ super() }}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
+    <!-- 添加 custom.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css')}}">
 {% endblock %}
 
 {% block content %}
@@ -38,20 +41,40 @@
 
         {% if content_type == 'category' %}
             {% for project in projects %}
-                <h2 class="content-subhead"><a target="_blank" href="{{ project.project_url }}">{{ project.title }}</a></h2>
-                {{ project.description|safe }}
+                <h2 class="content-subhead">
+                    <a target="_blank" href="{{ project.project_url }}">{{ project.title }}</a>
+                    {% if project.collected == 1 %}
+                        <i id="collect_{{ project.id }}" class="fa fa-heart color-blue"></i>
+                        <span hidden="hidden">{{ project.collected_project_id }}</span>
+                    {% else %}
+                        <i id="collect_{{ project.id }}" class="fa fa-heart-o color-blue"></i>
+                        <span hidden="hidden"></span>
+                    {% endif %}
+                </h2>
+                <p>{{ project.description|safe }}
                 {% if project.image_url %}
-                    <img style="max-width:100%;" src="{{ project.image_url }}" alt="{{ project.title }}">
+                    <br><img style="max-width:100%;" src="{{ project.image_url }}" alt="{{ project.title }}">
                 {% endif %}
+                </p>
             {% endfor %}
         {% else %}
             {% for projects in contents %}
                 <h2 class="content-subhead">{{ projects.pop(0) }}</h2>
                 {% for project in projects%}
+                    {{ project.index_num }}、<a target="_blank" href="{{ project.project_url }}">{{ project.title }}</a>
+                    {% if project.collected == 1 %}
+                        <i id="collect_{{ project.id }}" class="fa fa-heart color-blue"></i>
+                        <span hidden="hidden">{{ project.collected_project_id }}</span>
+                    {% else %}
+                        <i id="collect_{{ project.id }}" class="fa fa-heart-o color-blue"></i>
+                        <span hidden="hidden"></span>
+                    {% endif %}
+                    <p>
                     {{ project.description|safe }}
                     {% if project.image_url %}
-                        <img style="max-width:100%;" src="{{ project.image_url }}" alt="{{ project.title }}">
+                        <br><img style="max-width:100%;" src="{{ project.image_url }}" alt="{{ project.title }}">
                     {% endif %}
+                    </p>
                 {% endfor %}
             {% endfor %}
         {% endif %}
@@ -60,11 +83,11 @@
             <div class="pure-g">
                 <div class="pure-u-1-3">
                     {% if content_type == 'category' and 1< current_page <= page_count %}
-                    <div id="last">
+                    <div class="pre">
                         <a class="button-small pure-button pure-button-primary" href="/category/{{ category_url }}/?page={{ current_page-1 }}">上一页</a>
                     </div>
                     {% elif content_type == 'volume' and 0<current_volume_index<volume_name_len %}
-                    <div id="last">
+                    <div class="pre">
                         <a class="button-small pure-button pure-button-primary" href="/volume/{{ volume_name_list[current_volume_index-1] }}/">上一期</a>
                     </div>
                     {% endif %}
@@ -74,17 +97,53 @@
                 </div>
                 <div class="pure-u-1-3">
                     {% if content_type == 'category' and current_page < page_count %}
-                    <div id="next">
+                    <div class="next">
                         <a class="button-small pure-button pure-button-primary" href="/category/{{ category_url }}/?page={{ current_page+1 }}">下一页</a>
                     </div>
                     {% elif content_type == 'volume' and 0<=current_volume_index<volume_name_len-1%}
-                    <div id="next">
+                    <div class="next">
                         <a class="button-small pure-button pure-button-primary" href="/volume/{{ volume_name_list[current_volume_index+1] }}/">下一期</a>
                     </div>
                     {% endif %}
                 </div>
             </div>
         </div>
+
+        <!-- favourite box start -->
+        <div class="favourite">
+            <form class="pure-form pure-form-aligned">
+                <fieldset>
+                    <div class="pure-control-group">
+                        <label for="project_name">名称</label>
+                        <input id="project_name" type="text" placeholder="名称">
+                        <input id="project_url" type="text" hidden="hidden">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label for="collection_name">收藏夹</label>
+                        <select id="collection_name">
+                        </select>
+                    </div>
+
+                    <div class="pure-controls">
+                        <button id="favourite_cancel" type="button" class="pure-button pure-button-default">取消</button>
+                        <button id="favourite_submit" type="button" class="pure-button pure-button-primary">提交</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <!-- favourite box end -->
+        <!-- login box start -->
+        <div class="modal">
+            <div class="modal-content">
+                <p class="center modal-body">请先登陆 HelloGitHub</p>
+                <div class="center">
+                    <button id="login_box_cancel" class="pure-button">取消</button>
+                    <a id="login_box_submit" href="/sign/in/" class="pure-button pure-button-primary">登录</a>
+                </div>
+            </div>
+        </div>
+        <!-- login box end -->
     </div>
 </div>
 {% endblock %}
@@ -97,5 +156,5 @@
 <script src="{{ url_for('static', filename='js/highlight.pack.js') }}"></script>
 <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
 <script >hljs.initHighlightingOnLoad();</script>
-
+<script src="{{ url_for('static', filename='js/collect.js') }}"></script>
 {% endblock %}

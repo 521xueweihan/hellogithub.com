@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
+{% endblock %}
+
+{% block content %}
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="/">Hello GitHub</a>
+
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">返回首页</a></li>
+                {% if session.is_admin %}
+                    <li class="pure-menu-item"><a href="/manage/" class="pure-menu-link">管理后台</a></li>
+                {% endif %}
+                <li class="menu-item-divided pure-menu-selected">
+                    <a href="#" class="pure-menu-link">个人首页</a>
+                </li>
+                <li class="pure-menu-item"><a href="/profile/collection/" class="pure-menu-link">我的收藏</a></li>
+                <li class="pure-menu-item"><a href="/sign/out/" class="pure-menu-link">注销</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="header">
+            <h1><img height="50px" src="{{ user_info.avatar_url }}"></h1>
+            <h2>{{ user_info.name }}</h2>
+        </div>
+        <div class="content">
+            此页面还未开发，只开发了收藏夹页面
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+{% endblock %}

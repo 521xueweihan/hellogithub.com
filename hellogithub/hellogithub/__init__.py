@@ -4,20 +4,28 @@
 #   Author  :   XueWeiHan
 #   Date    :   17/6/9 上午9:50
 import os
-import logging
-from logging.handlers import RotatingFileHandler
 import traceback
 
-from flask import Flask, request, url_for
+from flask import Flask, request, url_for, jsonify
 from playhouse.flask_utils import FlaskDB
+from flask_wtf import CSRFProtect
 
-import config
+from config import logger, flask_config
+from models import database
+from views import InvalidUsage
+from views.home import home
+from views.profile import profile
+from views.manage import manage
+
 
 app = Flask(__name__)
-app.config.from_object(config)
+app.config.from_mapping(flask_config)
+app.register_blueprint(home)
+app.register_blueprint(profile)
+app.register_blueprint(manage)
 
-flask_db = FlaskDB(app)
-database = flask_db.database
+flask_db = FlaskDB(app, database)
+CSRFProtect(app)
 
 
 def dated_url_for(endpoint, **values):
@@ -31,6 +39,13 @@ def dated_url_for(endpoint, **values):
                                      endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
+
+    
+@app.errorhandler(InvalidUsage)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 
 @app.context_processor
@@ -54,12 +69,3 @@ def exceptions(e):
                  request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
                  request.method, request.scheme, request.full_path, tb)
     return '500 INTERNAL SERVER ERROR', 500
-
-handler = RotatingFileHandler('%s.log' % app.name, maxBytes=10000000, backupCount=3)
-logger = logging.getLogger(app.name)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.setLevel(logging.INFO)
-logger.addHandler(handler)
-
-from views import *

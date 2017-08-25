@@ -3,11 +3,22 @@
  */
 // {# 新增分类 #}
 $(document).ready(function() {
-    $("#create-category-submit").click(function () {
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    });
+    $("#create-category-submit").click(function() {
         $.ajax({
             url: '/manage/category/',
             type: 'POST',
-            data: { category_name: $("#create-category-name").val()},
+            data: {
+                category_name: $("#create-category-name").val()
+            },
             success: function (result) {
                 if (result.code == 200){
                     $("#result").html(result.message);
@@ -43,10 +54,22 @@ $(document).on("click", "#edit-category-button", function() {
 
 // {# 编辑 category #}
 $(document).on("click", "#edit-category-submit", function() {
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    });
     $.ajax({
         url: "/manage/category/",
         type: "PUT",
-        data: { category_id: $(this).val(), category_name: $("#category-name").val() },
+        data: {
+            category_id: $(this).val(),
+            category_name: $("#category-name").val()
+        },
         success: function(result) {
             if (result.code == 200){
                 $("#result").html(result.message);
@@ -60,6 +83,15 @@ $(document).on("click", "#edit-category-submit", function() {
 
 // {# 删除 category #}
 $(document).on("click", "#delete-category-submit", function() {
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    });
     var category_name = $(this).parent().siblings("#category-name").text();
     var category_id = $(this).parent().siblings("#category-id").text();
     $.ajax({

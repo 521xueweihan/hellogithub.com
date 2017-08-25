@@ -317,12 +317,3 @@ pre code:after {
 .button-secondary {
     background: rgb(66, 184, 221); /* this is a light blue */
 }
-/*
-Page button
-*/
-#last {
-    float: left;
-}
-#next {
-    float: right;
-}

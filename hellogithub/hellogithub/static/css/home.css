@@ -37,9 +37,15 @@ p {
 }
 
 .pure-menu-link {
+    color: #0077B5;
     padding: .5em .7em;
 }
 
+.pure-menu-avatar {
+    padding: 1px 1px;
+    height: 18px;
+    vertical-align: sub;
+}
 
 /*
  * -- BANNER --

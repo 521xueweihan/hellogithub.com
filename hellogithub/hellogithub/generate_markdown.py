@@ -6,8 +6,8 @@
 #   Desc    :   生成输出内容
 import os
 
-from hellogithub.models import Category, Volume, Content
-from hellogithub import database, app
+from config import GITHUB_IMAGE_PREFIX, GITHUB_TEMPLAT_PATH, GITBOOK_TEMPLAT_PATH
+from hellogithub.models import Category, Volume, Content, database
 
 CONTENT_FLAG = '{{ hello_github_content }}'
 NUM_FLAG = '{{ hello_github_num }}'
@@ -57,7 +57,7 @@ def generate_image_url(image_path, volume_num, output_type):
         image_url_format = '/volume{vol_num}/img/'.format(vol_num=volume_num)
         image_url = image_url_format+image_path.split('/')[-1]
     elif output_type == 'github':
-        image_url = app.config['GITHUB_IMAGE_PREFIX']+image_path
+        image_url = GITHUB_IMAGE_PREFIX+image_path
     else:
         return ''
     return u"![]({image_url})\n\n".format(image_url=image_url)
@@ -83,10 +83,10 @@ def generate_markdown(volume_id, output_type):
             content_str += generate_image_url(
                 project['image_path'], volume_num, output_type)
     if output_type == 'github':
-        temple_data = read_file(app.config['GITHUB_TEMPLAT_PATH'])
+        temple_data = read_file(GITHUB_TEMPLAT_PATH)
         temple_data = temple_data.replace(NUM_FLAG, volume_num)
     elif output_type == 'gitbook':
-        temple_data = read_file(app.config['GITBOOK_TEMPLAT_PATH'])
+        temple_data = read_file(GITBOOK_TEMPLAT_PATH)
         temple_data = temple_data.replace(NUM_FLAG, volume_num)
     else:
         return ''

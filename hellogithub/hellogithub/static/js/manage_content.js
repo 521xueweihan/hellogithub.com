@@ -225,6 +225,15 @@ $(document).on("click", "#edit-project-button", function() {
 
 // {# 更新 project 数据 #}
 $(document).on("click", "#edit-project-submit", function() {
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    });
     var request_params={
         project_id: $(this).val(),
         volume_id: $("#project-volume").val(),
@@ -294,6 +303,15 @@ $(document).on("click", "#create-project-button", function () {
 
 // {# 新增 project 数据 #}
 $(document).on("click", "#create-project-submit", function() {
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    });
+
     var request_params={
         volume_id: $("#project-volume").val(),
         description: $("#project-description").val(),
@@ -320,6 +338,15 @@ $(document).on("click", "#create-project-submit", function() {
 
 // {# 删除 project #}
 $(document).on("click", "#delete-project-submit", function() {
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    });
+
     var project_title = $(this).parent().siblings("#project-title").text();
     var project_id = $(this).val();
     $.ajax({

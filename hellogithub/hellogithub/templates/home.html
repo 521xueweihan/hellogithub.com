@@ -9,18 +9,14 @@
 
 {% block content %}
 <div class="pure-menu pure-menu-horizontal">
-    <a href="#" class="pure-menu-heading">Hello GitHub</a>
+    <a href="/" class="pure-menu-heading">Hello GitHub</a>
     <ul class="pure-menu-list" style="float: right;">
-        {% if user_info %}
+        {% if session.is_login %}
             <li class="pure-menu-item">
-                {% if user_info.admin %}
-                    <a href="/manage/" class="pure-menu-link">{{ user_info.name }}</a>
-                {% else %}
-                    <div class="pure-menu-link">{{ user_info.name }}</div>
-                {% endif %}
-            </li>
-            <li class="pure-menu-item">
-                <a href="/sign/out/" class="pure-menu-link">注销</a>
+                <a class="pure-menu-link" href="/profile/collection/">
+                    <img class="pure-menu-avatar" src="{{ user_info.avatar_url }}">
+                    我的收藏
+                </a>
             </li>
         {% else %}
             <li class="pure-menu-item"><a href="/sign/in/" class="pure-menu-link">Sign in</a></li>
@@ -57,7 +53,7 @@
                     <label>选择一期：
                         <select id="volume" onchange="get_select(this.id)">
                             {% for volume in volumes %}
-                                <option>{{ volume.name }}</option>
+                                <option value="/volume/{{ volume.name }}/">{{ volume.name }}</option>
                             {% endfor %}
                         </select>
                     </label>
@@ -89,7 +85,7 @@
                                 {% if category.name == select_category.name %}
                                     <option selected>{{ category.name }}</option>
                                 {% else %}
-                                    <option>{{ category.name }}</option>
+                                    <option value="/category/{{ category.quote_name }}/">{{ category.name }}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
@@ -97,7 +93,7 @@
                     </li>
                 </ul>
 
-                <a id='category-button' class="button-choose pure-button" href="/category/{{ select_category.name }}/">查看</a>
+                <a id='category-button' class="button-choose pure-button" href="/category/{{ select_category.quote_name }}/">查看</a>
             </div>
         </div>
         {# 推荐项目 #}
@@ -165,21 +161,22 @@
 </div> <!-- end l-content -->
 
 <div class="footer l-box">
-        <p>
-            Follow me on <a href="https://github.com/521xueweihan">GitHub</a>.<br>
+    <p>
         <a target="_blank" style="color: #888;" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802023873">
             <img style="width: 18px;vertical-align: sub;" src="https://hellogithub.com/img/filing.png"/>京公网安备 11010802023873号
         </a>
-        </p>
+        <a target="_blank" style="color: #888;" href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action">
+            京ICP备 17046648号
+        </a>
+    </p>
 </div>
 {% endblock %}
 
 {% block js %}
 <script>
-    function get_select(x)
-    {
-        var select_value=encodeURIComponent(document.getElementById(x).value);
-        document.getElementById(x+"-button").href="/"+x+"/"+select_value+"/";
-    }
+function get_select(x)
+{
+    document.getElementById(x+"-button").href=document.getElementById(x).value;
+}
 </script>
 {% endblock %}

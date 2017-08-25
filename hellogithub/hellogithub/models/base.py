@@ -5,8 +5,13 @@
 #   Date    :   17/6/12 上午11:49
 #   Desc    :   数据库连接、BaseModel
 from peewee import Model
+from playhouse.db_url import connect
 from playhouse.sqlite_ext import PrimaryKeyAutoIncrementField
-from hellogithub import database
+
+from ..config import DATABASE_URL
+
+database = connect(DATABASE_URL)
+
 
 
 class BaseModel(Model):
