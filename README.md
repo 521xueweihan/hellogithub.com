@@ -7,7 +7,7 @@
 本项目为 [hellogithub.com](https://hellogithub.com) 网站的源码。既然做的是开源的项目推荐，那么索性就把该网站也开源了。
 
 ## 现在
-此项目基于 Flask 开发，现在只开发了一些基本功能，并没有集成 flask 的第三方库。现已发开的功能：
+此项目基于 Flask 开发，现在只开发了一些基本功能，并没有集成 flask 的第三方库。现已发开的功能，[开发日志](https://github.com/521xueweihan/hellogithub.com/blob/master/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97.md)：
 - OAuth 登陆
 - 后台内容管理
 - 前端异步展示
@@ -22,7 +22,7 @@
 2. 安装依赖：`pip install -r requirements.txt`
 3. 启动：`python server.py`
 
-**开启 admin 权限：**
+**开启管理后台权限：**
 - 登陆一次
 - 修改数据库中 admin 字段为 1
 - 注销，重新登陆
@@ -33,4 +33,4 @@
 - 信息流（保证每天有内容产出）
 - 订阅
 
-有一点我可以保证：本项目也会持续的迭代。
+有一点我可以保证：本项目会一直维护下去。

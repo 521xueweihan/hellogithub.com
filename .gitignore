@@ -76,3 +76,6 @@ hellogithub.log
 # script file
 script/
 output.py
+
+# gif file
+gif_history
