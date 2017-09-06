@@ -1,18 +1,18 @@
 /**
  * Created by XueWeiHan on 17/7/14 下午11:57.
  */
-// {# 新增一期 #}
-$(document).ready(function() {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
+var csrftoken = $('meta[name=csrf-token]').attr('content');
 
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
-            }
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken)
         }
-    });
+    }
+});
 
+// {# 新增Vol. #}
+$(document).ready(function() {
     $("#create-volume-submit").click(function () {
         $.ajax({
             url: '/manage/volume/',
@@ -21,12 +21,10 @@ $(document).ready(function() {
                 volume_name: $("#create-volume-name").val()
             },
             success: function (result) {
-                if (result.code == 200){
-                    $("#result").html(result.message);
-                }
-                else {
-                    alert(result.message);
-                }
+                $("#result").html(result.message);
+            },
+            error: function (jqXHR) {
+                alert(jqXHR.responseJSON.message);
             }
         });
     });
@@ -43,11 +41,11 @@ $(document).on("click", "#edit-volume-button", function() {
                 "<fieldset class=\"pure-group\">"+
                     "<div class=\"pure-control-group\">"+
                         "<label for=\"volume-name\">Volume Name：</label>"+
-                        "<input id=\"volume-name\" value=\""+result.message.name+"\" type=\"text\" class=\"pure-input-1-2\">"+
+                        "<input id=\"volume-name\" value=\""+result.payload.name+"\" type=\"text\" class=\"pure-input-1-2\">"+
                     "</div>"+
                 "</fieldset>"+
 
-                "<button id=\"edit-volume-submit\" value=\""+result.message.id+"\" type=\"button\" class=\"pure-button pure-input-1 pure-button-primary\">Submit</button>"+
+                "<button id=\"edit-volume-submit\" value=\""+result.payload.id+"\" type=\"button\" class=\"pure-button pure-input-1 pure-button-primary\">Submit</button>"+
             "</form>");
         }
     });
@@ -55,16 +53,6 @@ $(document).on("click", "#edit-volume-button", function() {
 
 // {# 编辑 volume #}
 $(document).on("click", "#edit-volume-submit", function() {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
-
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
-            }
-        }
-    });
-
     $.ajax({
         url: "/manage/volume/",
         type: "PUT",
@@ -73,60 +61,39 @@ $(document).on("click", "#edit-volume-submit", function() {
             volume_name: $("#volume-name").val()
         },
         success: function(result) {
-            if (result.code == 200){
-                $("#result").html(result.message);
-            }
-            else {
-                alert(result.message);
-            }
+            $("#result").html(result.message);
+        },
+        error: function (jqXHR) {
+            alert(jqXHR.responseJSON.message);
         }
     });
 });
 
 // {# 删除 volume #}
 $(document).on("click", "#delete-volume-submit", function() {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
-
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
-            }
-        }
-    });
-
     var volume_name = $(this).parent().siblings("#volume-name").text();
     var volume_id = $(this).parent().siblings("#volume-id").text();
-    $.ajax({
-        url: "/manage/volume/",
-        type: "DELETE",
-        data: {
-            volume_name: volume_name,
-            volume_id: volume_id
-        },
-        success: function (result) {
-            if (result.code == 200){
+    var user_choice = window.confirm("确定删除 Vol.："+ volume_name +"?");
+    if(user_choice) {
+        $.ajax({
+            url: "/manage/volume/",
+            type: "DELETE",
+            data: {
+                volume_name: volume_name,
+                volume_id: volume_id
+            },
+            success: function (result) {
                 $("#result").html(result.message);
+            },
+            error: function (jqXHR) {
+                alert(jqXHR.responseJSON.message);
             }
-            else {
-                alert(result.message);
-            }
-        }
-    });
+        });
+    }
 });
 
 // {# 发布 volume #}
 $(document).on("click", "#publish-volume-submit", function() {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
-
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
-            }
-        }
-    });
-
     $.ajax({
         url: "/manage/publish/volume/",
         type: "POST",
@@ -134,12 +101,10 @@ $(document).on("click", "#publish-volume-submit", function() {
             volume_id: $(this).val()
         },
         success: function(result) {
-            if (result.code == 200){
-                $("#result").html(result.message);
-            }
-            else {
-                alert(result.message);
-            }
+            $("#result").html(result.message);
+        },
+        error: function (jqXHR) {
+            alert(jqXHR.responseJSON.message);
         }
     });
 });
@@ -154,7 +119,7 @@ $(document).on("click", "#outpout-markdown-github-submit", function() {
             $("#result").html("<form class=\"pure-form\">"+
                 "<fieldset class=\"pure-group\">"+
                     "<fieldset class=\"pure-group\">"+
-                    "<textarea id=\"project-description\" class=\"pure-input-1\" rows=\"20\">"+result.message+"</textarea>"+
+                    "<textarea id=\"project-description\" class=\"pure-input-1\" rows=\"20\">"+result.payload+"</textarea>"+
                 "</fieldset>"+
             "</form>");
         }
@@ -171,7 +136,7 @@ $(document).on("click", "#outpout-markdown-gitbook-submit", function() {
             $("#result").html("<form class=\"pure-form\">"+
                 "<fieldset class=\"pure-group\">"+
                     "<fieldset class=\"pure-group\">"+
-                    "<textarea id=\"project-description\" class=\"pure-input-1\" rows=\"20\">"+result.message+"</textarea>"+
+                    "<textarea id=\"project-description\" class=\"pure-input-1\" rows=\"20\">"+result.payload+"</textarea>"+
                 "</fieldset>"+
             "</form>");
         }

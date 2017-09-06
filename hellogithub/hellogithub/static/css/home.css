@@ -208,8 +208,9 @@ p {
     text-align: center;
 }
     .footer a {
-        color: #ddd;
+        color: #888;
         text-decoration: none;
+        font-weight: 500;
     }
 
 

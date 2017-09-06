@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <meta name="description" content="HelloGitHub 编程语言排名、热度、世界上最好的编程语言是什么？">
+    <script src="https://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
+{% endblock %}
+
+{% block body %}
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="/">Hello GitHub</a>
+
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+                <li class="pure-menu-item"><a href="{{ menu_url }}" class="pure-menu-link">内容</a></li>
+                <li class="menu-item-divided pure-menu-selected">
+                    <a href="/tiobe/?url={{ menu_url }}" class="pure-menu-link">TIOBE 排行榜</a>
+                </li>
+                <li class="pure-menu-item"><a href="/about/?url={{ menu_url }}" class="pure-menu-link">关于</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="main">
+        <div class="header">
+            <h1>{{ page_title }}</h1>
+            <h2>最新 TIOBE 编程语言排行榜，关注编程语言动态</h2>
+        </div>
+
+        <div class="content">
+            <h2 class="content-subhead">{{ content.title }}</h2>
+            <p>{{ content.description }}</p>
+
+            <div id="container"></div>
+            <script>
+                var chart = new Highcharts.Chart('container', {
+                credits: {
+                      enabled: false
+                },
+                chart: {
+                    type: 'spline'
+                },
+                plotOptions: {
+                    spline: {
+                        lineWidth: 4,
+                        states: {
+                            hover: {
+                                lineWidth: 5
+                            }
+                        },
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                title: {
+                    text: 'TOP 10 编程语言的走势图',
+                    x: -20,
+                    useHTML: true
+                },
+                subtitle: {
+                    text: 'Source: www.tiobe.com',
+                    x: -20,
+                    useHTML: true
+                },
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: {
+                        year: '%Y'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: '评级 (%)'
+                    },
+                    min: 0,
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    valueSuffix: '%',
+                    dateTimeLabelFormats: {
+                        week: "%B %Y"
+                    }
+                },
+                legend: {
+                  layout: 'vertical',align: 'right',verticalAlign: 'middle',borderWidth: 0,useHTML: true
+                },
+                series: [
+                    {{ content.chart_str|safe }}
+                ]
+            });
+            </script>
+
+            <h2 class="content-subhead">编程语言排行榜 TOP 50 榜单</h2>
+            <table class="pure-table">
+                <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>编程语言</th>
+                    <th>等级</th>
+                    <th>年度明星语言</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for rank in ranks %}
+                <tr>
+                    <td>{{ rank.position }}</td>
+                    <td>{{ rank.language }}</td>
+                    <td>{{ rank.rating }}</td>
+                    <td>{{ rank.star or '-' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

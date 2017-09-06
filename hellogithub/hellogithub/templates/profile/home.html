@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
 {% endblock %}
 
-{% block content %}
+{% block body %}
 <div id="layout">
     <!-- Menu toggle -->
     <a href="#menu" id="menuLink" class="menu-link">
@@ -42,8 +42,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block js %}
-<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
 {% endblock %}

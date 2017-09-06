@@ -1,11 +1,6 @@
-{% extends "base.html" %}
+{% extends "manage/manage_layout.html" %}
 
-{% block head %}
-    {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
-{% endblock %}
-
-{% block content %}
+{% block body %}
 <div id="layout">
     <!-- Menu toggle -->
     <a href="#menu" id="menuLink" class="menu-link">
@@ -77,6 +72,6 @@
 {% endblock %}
 
 {% block js %}
-<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+{{ super() }}
 <script src="{{ url_for('static', filename='js/manage_content.js')}}"></script>
 {% endblock %}

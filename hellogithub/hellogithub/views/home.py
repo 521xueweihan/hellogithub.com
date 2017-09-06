@@ -14,8 +14,9 @@ from playhouse.flask_utils import PaginatedQuery
 from peewee import DoesNotExist
 
 from tools import markdown2html, make_image_url
-from ..models import Category, Volume, Content, User, Collection, \
+from ..models.hellogithub import Category, Volume, Content, User, Collection, \
     CollectionProject
+from ..models.tiobe import TiobeContent, TiobeHall, TiobeRank
 from ..config import CLIENT_ID, CLIENT_SECRET, ACCESS_URL, PAGE_MAX, \
     AUTHORIZE_URL, logger
 
@@ -36,69 +37,69 @@ def get_collected_project_status(project_url):
     uuid = session.get('uuid')
     # 找到已登录的用户收藏的项目
     if uuid:
-        collected_project_objs = CollectionProject \
-            .select(CollectionProject, Collection)\
-            .join(Collection) \
-            .where(CollectionProject.status == 1, Collection.uuid == uuid)
+        collected_projects = CollectionProject.select(CollectionProject,
+                                                      Collection)\
+                                              .join(Collection) \
+                                              .where(CollectionProject.status == 1,
+                                                     Collection.uuid == uuid)
         collected_project_list = [
             {fi_collected_project_obj.project_url: fi_collected_project_obj.id}
-            for fi_collected_project_obj in collected_project_objs
-        ]
+            for fi_collected_project_obj in collected_projects]
     else:
         collected_project_list = []
 
     for fi_collected_project in collected_project_list:
         if fi_collected_project.get(project_url):
-            return True, 1, fi_collected_project.get(project_url)
-    return False, 0, 0
+            return 1, fi_collected_project.get(project_url)
+    return 0, 0
 
 
 def get_user_collections_list():
     uuid = session.get('uuid')
     if uuid:
-        collection_objs = Collection.select().where(
-            Collection.uuid == uuid, Collection.status == 1) \
-            .order_by(Collection.create_time)
-        if not collection_objs:
-            collection_obj = Collection.create(name=u'默认收藏夹', uuid=uuid)
-            collection_objs = [collection_obj]
+        collections = Collection.select()\
+                                .where(Collection.uuid == uuid,
+                                       Collection.status == 1)\
+                                .order_by(Collection.create_time)
+        if not collections:
+            collection = Collection.create(name=u'默认收藏夹', uuid=uuid)
+            collections = [collection]
     else:
         return []
-    return collection_objs
+    return collections
 
 
 @home.route('/')
 def index():
     uuid = session.get('uuid')
-    if uuid:
-        try:
-            user_info = User.get(User.uuid == uuid)
-        except Exception:
-            session.clear()
-            user_info = ''
-    else:
-        user_info = ''
-    category_objects = Category.select(Content, Category) \
-        .join(Content) \
-        .where(Content.status == 1) \
-        .group_by(Category.id) \
-        .order_by(Category.name)
-    for fi_category_obj in category_objects:
-        fi_category_obj.quote_name = quote(fi_category_obj.name.encode('utf-8'))
-    volume_objects = Volume.select(Volume.name).where(Volume.status == 1)\
-                           .order_by(Volume.name.desc())
-    content_objects = Content.select().where(Content.status == 1)
-    select_category = random.choice(category_objects)
+    user_info = ''
+
+    try:
+        user_info = User.get(User.uuid == uuid)
+    except DoesNotExist:
+        session.clear()
+
+    categories = Category.select(Content, Category) \
+                         .join(Content) \
+                         .where(Content.status == 1) \
+                         .group_by(Category.id) \
+                         .order_by(Category.name)
     
-    return render_template('home.html', user_info=user_info,
-                           category_count=len(category_objects),
-                           volume_count=len(volume_objects),
-                           page_title=u'GitHub 上入门级、有趣、实用的开源项目',
-                           project_count=len(content_objects),
-                           last_volume_num=max([volume_object.name
-                                                for volume_object in volume_objects]),
+    # category_name urlencode
+    for fi_category in categories:
+        fi_category.quote_name = quote(fi_category.name.encode('utf-8'))
+        
+    volumes = Volume.select(Volume.name)\
+                    .where(Volume.status == 1)\
+                    .order_by(Volume.name.desc())
+    contents = Content.select().where(Content.status == 1)
+    select_category = random.choice(categories)
+    
+    return render_template('home/home.html', user_info=user_info,
+                           page_title=u'分享 GitHub 上入门级、有趣的开源项目',
+                           contents=contents,
                            select_category=select_category,
-                           categorys=category_objects, volumes=volume_objects)
+                           categories=categories, volumes=volumes)
 
 
 @home.route('/sign/in/')
@@ -133,6 +134,7 @@ def sign_in():
         avatar_url = github_user_json.get('avatar_url')
         email = github_user_json.get('email')
         
+        # 获取、存储或更新用户信息
         try:
             user_object = User.get(User.uuid == github_user_id)
             update_session(user_object)
@@ -164,26 +166,29 @@ def category(input_category):
     """
     
     menu_url = quote(request.path.encode('utf-8'))
-    content_objects = Content.select(Category, Content).join(Category) \
-        .where(Category.name == input_category, Content.status == 1)
-    page_object = PaginatedQuery(content_objects,
+    contents = Content.select(Category, Content)\
+                      .join(Category)\
+                      .where(Category.name == input_category,
+                             Content.status == 1)
+    # 分页
+    page_object = PaginatedQuery(contents,
                                  paginate_by=PAGE_MAX,
                                  check_bounds=True)
-    project_objects = page_object.get_object_list()
-    
-    for project_object in project_objects:
-        status, collected, collected_project_id = get_collected_project_status(project_object.project_url)
-        if status:
-            project_object.collected = collected
-            project_object.collected_project_id = collected_project_id
-
-        project_object.description = markdown2html(project_object.description)
-        project_object.image_url = make_image_url(project_object.image_path)
     page_count = page_object.get_page_count()
     current_page = page_object.get_page()
-    return render_template('content.html', projects=project_objects,
-                           menu_url=menu_url,
-                           content_type='category', page_title=input_category,
+    projects = page_object.get_object_list()
+
+    for project in projects:
+        collected, collected_project_id = get_collected_project_status(
+            project.project_url)
+        if collected:
+            project.collected = collected
+            project.collected_project_id = collected_project_id
+
+        project.description = markdown2html(project.description)
+        project.image_url = make_image_url(project.image_path)
+    return render_template('home/category.html', projects=projects,
+                           menu_url=menu_url, page_title=input_category,
                            category_url=quote(input_category.encode('utf-8')),
                            page_count=page_count, current_page=current_page)
 
@@ -193,15 +198,17 @@ def volume(input_volume):
     menu_url = quote(request.path.encode('utf-8'))
 
     content_objects = Content.select(Content, Volume) \
-        .join(Volume) \
-        .where(Volume.name == input_volume, Volume.status == 1,
-               Content.status == 1)
+                             .join(Volume) \
+                             .where(Volume.name == input_volume,
+                                    Volume.status == 1,
+                                    Content.status == 1)
     
-    category_objects = Category.select().order_by(Category.name)
+    categories = Category.select().order_by(Category.name)
     
-    volume_objects = Volume.select().where(Volume.status == 1).order_by(
-        Volume.name.asc())
-    volume_name_list = [fi_volume_obj.name for fi_volume_obj in volume_objects]
+    volumes = Volume.select()\
+                    .where(Volume.status == 1)\
+                    .order_by(Volume.name.asc())
+    volume_name_list = [fi_volume_obj.name for fi_volume_obj in volumes]
     if input_volume in volume_name_list:
         current_volume_index = volume_name_list.index(input_volume)
     else:
@@ -209,13 +216,13 @@ def volume(input_volume):
     
     contents = []
     index_num = 0
-    for category_object in category_objects:
+    for category_object in categories:
         projects = [category_object.name]  # 类别放在list第一个
         for fi_content in content_objects:
             if fi_content.category.name == category_object.name:
-                status, collected, collected_project_id = get_collected_project_status(
+                collected, collected_project_id = get_collected_project_status(
                     fi_content.project_url)
-                if status:
+                if collected:
                     fi_content.collected = collected
                     fi_content.collected_project_id = collected_project_id
                 index_num += 1
@@ -225,10 +232,9 @@ def volume(input_volume):
                 projects.append(fi_content)
         if not len(projects) == 1:
             contents.append(projects)
-    return render_template('content.html', contents=contents,
-                           content_type='volume', menu_url=menu_url,
+    return render_template('home/volume.html', contents=contents,
+                           menu_url=menu_url,
                            volume_name_list=volume_name_list,
-                           volume_name_len=len(volume_name_list),
                            current_volume_index=current_volume_index,
                            page_title=u'第 {vol} 期'.format(vol=input_volume))
 
@@ -236,5 +242,30 @@ def volume(input_volume):
 @home.route('/about/')
 def about():
     content_menu_url = quote(request.args.get('url', '/').encode('utf-8'))
-    return render_template('about.html', page_title=u'关于',
+    return render_template('home/about.html', page_title=u'关于',
                            menu_url=content_menu_url)
+
+
+@home.route('/tiobe/')
+def tiobe_index():
+    content_menu_url = quote(request.args.get('url', '/').encode('utf-8'))
+
+    content_obj = TiobeContent.select()\
+                              .order_by(TiobeContent.publish_date)\
+                              .get()
+    rank_objs = TiobeRank.select()\
+                         .where(TiobeRank.publish_date.month
+                                == content_obj.publish_date.month) \
+                         .order_by(TiobeRank.position)
+    hall_objs = TiobeHall.select()
+    
+    for rank_obj in rank_objs:
+        for hall_obj in hall_objs:
+            if rank_obj.language == hall_obj.language:
+                rank_obj.star = hall_obj.year
+    page_title = content_obj.publish_date.strftime('%Y年%m月').decode('utf-8') \
+                 + u'编程语言排行榜'
+    
+    return render_template('home/tiobe.html', content=content_obj,
+                           ranks=rank_objs, menu_url=content_menu_url,
+                           page_title=page_title)

@@ -7,7 +7,8 @@
 import os
 
 from config import GITHUB_IMAGE_PREFIX, GITHUB_TEMPLAT_PATH, GITBOOK_TEMPLAT_PATH
-from hellogithub.models import Category, Volume, Content, database
+from hellogithub.models.base import database
+from hellogithub.models.hellogithub import Category, Volume, Content
 
 CONTENT_FLAG = '{{ hello_github_content }}'
 NUM_FLAG = '{{ hello_github_num }}'

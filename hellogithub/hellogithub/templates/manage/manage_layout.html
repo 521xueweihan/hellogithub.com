@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+{% endblock %}

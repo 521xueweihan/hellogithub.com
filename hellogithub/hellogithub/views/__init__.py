@@ -35,3 +35,8 @@ class ParamsConflict(InvalidUsage):
 class Unauthorized(InvalidUsage):
     def __init__(self, message=u'需要登录', status_code=401):
         super(Unauthorized, self).__init__(message, status_code)
+
+
+class Forbidden(InvalidUsage):
+    def __init__(self, message=u'禁止访问', status_code=403):
+        super(Forbidden, self).__init__(message, status_code)

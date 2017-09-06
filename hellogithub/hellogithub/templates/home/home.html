@@ -2,12 +2,13 @@
 
 {% block head %}
     {{ super() }}
+    <meta name="description" content="分享 GitHub 入门级、有趣的开源项目。推广自己的开源项目、编程实践项目、适合练手的开源项目、HelloGitHub月刊">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/grids-responsive-min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css')}}">
 {% endblock %}
 
-{% block content %}
+{% block body %}
 <div class="pure-menu pure-menu-horizontal">
     <a href="/" class="pure-menu-heading">Hello GitHub</a>
     <ul class="pure-menu-list" style="float: right;">
@@ -41,7 +42,7 @@
                     <h2>已发布</h2>
 
                     <span class="pricing-table-price">
-                        {{ volume_count }} <span>期</span>
+                        {{ volumes.__len__() }} <span>期</span>
                     </span>
                 </div>
 
@@ -60,7 +61,7 @@
                     </li>
                 </ul>
 
-                <a id="volume-button" class="button-choose pure-button" href="/volume/{{ last_volume_num }}/">阅读</a>
+                <a id="volume-button" class="button-choose pure-button" href="/volume/{{ volumes[0].name }}/">阅读</a>
             </div>
         </div>
         {# 类别 #}
@@ -70,7 +71,7 @@
                     <h2>分类共有</h2>
 
                     <span class="pricing-table-price">
-                       {{ category_count }} <span>类</span>
+                       {{ categories.__len__() }} <span>类</span>
                     </span>
                 </div>
 
@@ -81,7 +82,7 @@
                     <li>
                     <label>选择分类：
                         <select id="category" onchange="get_select(this.id)">
-                            {% for category in categorys %}
+                            {% for category in categories %}
                                 {% if category.name == select_category.name %}
                                     <option selected>{{ category.name }}</option>
                                 {% else %}
@@ -103,7 +104,7 @@
                     <h2>项目总数</h2>
 
                     <span class="pricing-table-price">
-                       {{ project_count }} <span>个</span>
+                       {{ contents.__len__() }} <span>个</span>
                     </span>
                 </div>
 
@@ -157,15 +158,15 @@
             </div>
         </div>
     </div><!-- end information -->
-
 </div> <!-- end l-content -->
 
 <div class="footer l-box">
     <p>
-        <a target="_blank" style="color: #888;" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802023873">
+        <a target="_blank" href="https://github.com/521xueweihan">Follow @521xueweihan on GitHub</a><br>
+        <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo">
             <img style="width: 18px;vertical-align: sub;" src="https://hellogithub.com/img/filing.png"/>京公网安备 11010802023873号
         </a>
-        <a target="_blank" style="color: #888;" href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action">
+        <a target="_blank" href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action">
             京ICP备 17046648号
         </a>
     </p>

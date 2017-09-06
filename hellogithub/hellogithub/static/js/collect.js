@@ -162,8 +162,8 @@ $(document).ready(function() {
         var $this = $(this);
         var collection_name = $this.siblings(".item-name").text();
         var collection_id = $this.siblings(".item-id").text();
-        var user_chooise = window.confirm("确定删除收藏夹："+ collection_name+"?");
-        if (user_chooise){
+        var user_choice = window.confirm("确定删除收藏夹："+ collection_name+"?");
+        if (user_choice){
             $.ajax({
                 url: "/profile/collection/",
                 type: "DELETE",

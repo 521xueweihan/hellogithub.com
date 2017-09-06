@@ -11,7 +11,7 @@ from playhouse.flask_utils import FlaskDB
 from flask_wtf import CSRFProtect
 
 from config import logger, flask_config
-from models import database
+from models.base import database
 from views import InvalidUsage
 from views.home import home
 from views.profile import profile

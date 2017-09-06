@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
 {% block head %}
-    {{ super() }}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
+{{ super() }}
+<meta name="description" content="分享 GitHub 入门级、有趣的开源项目。推广自己的开源项目、编程实践项目、适合练手的开源项目、HelloGitHub月刊">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
 {% endblock %}
 
-{% block content %}
+{% block body %}
 <div id="layout">
     <!-- Menu toggle -->
     <a href="#menu" id="menuLink" class="menu-link">
@@ -21,8 +22,9 @@
             <ul class="pure-menu-list">
                 <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
                 <li class="pure-menu-item"><a href="{{ menu_url }}" class="pure-menu-link">内容</a></li>
+                <li class="pure-menu-item"><a href="/tiobe/?url={{ menu_url }}" class="pure-menu-link">TIOBE 排行榜</a></li>
                 <li class="menu-item-divided pure-menu-selected">
-                    <a href="/about/" class="pure-menu-link">关于</a>
+                    <a href="/about/?url={{ menu_url }}" class="pure-menu-link">关于</a>
                 </li>
             </ul>
         </div>
@@ -30,7 +32,7 @@
     <div id="main">
         <div class="header">
             <h1>{{ page_title }}</h1>
-            <h2>兴趣是最好的老师，Hello GitHub 就是帮你找到编程的兴趣。</h2>
+            <h2>兴趣是最好的老师，HelloGitHub 就是帮你找到编程的兴趣。</h2>
         </div>
 
         <div class="content">
@@ -40,12 +42,14 @@
                 <li>GitHub 是享誉全球最大的程序员同性交友网站，汇集的大量的开源项目、丰富的编程资源、有意思的项目。</li>
             </ul>
             <p>
-                综上所述 HelloGitHub 这个网站就是挖掘 GitHub 上的资源，展示优秀的项目。从而帮助想要学习编程、编程新手，通过这些有意思的项目找到编程乐趣、优秀的项目提高编程技巧、动手实践不断提高。
+                这就是 HelloGitHub 网站名的由来。随着<a target="_blank" href="https://github.com/521xueweihan/HelloGitHub">《HelloGitHub 月刊》</a>推荐的项目越来越多，单纯通过文本和人脑无法流畅的管理这些信息，所以我就创建了这个网站。
+                编程是一门实践性技能，只有不断的动手编写代码才能提高编程能力，希望你可以在 HelloGitHub 这个网站推荐的各种开源项目中发现自己感兴趣的项目，动手加入、发起自己的开源项目。
             </p>
 
             <h2 class="content-subhead">关于开源</h2>
             <p>
-                开源是推动编程发展的重要动力，需要大家努力，新鲜血液的加入。<br>
+                项目源代码已开源在 GitHub 上，<a target="_blank" href="https://github.com/521xueweihan/hellogithub.com">地址</a><br>
+                现在网站的功能简单、样式丑陋、代码不优雅、交互垃圾、内容太少，如果你也是这样认为，那还等什么赶紧贡献代码，我等你！
             </p>
 
             <div class="pure-g">
@@ -71,10 +75,13 @@
             <ul>
                 <li>Flask</li>
                 <li>Peewee</li>
+                <li>requests</li>
+                <li>huey</li>
             </ul>
             <p><code>前端</code></p>
             <ul>
                 <li>Purecss</li>
+                <li>font-awesome</li>
                 <li>jQuery</li>
                 <li>share.js</li>
                 <li>highlight.js</li>

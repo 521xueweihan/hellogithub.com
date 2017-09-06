@@ -1,6 +1,15 @@
 /**
  * Created by XueWeiHan on 17/7/14 下午11:40.
  */
+var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+        }
+    }
+});
 
 $(document).ready(function() {
     // {# 动态展示对应的 subset #}
@@ -24,21 +33,71 @@ $(document).ready(function() {
             type: type_value,
             subset: $("#subset-"+type_value).val()
         };
-         console.log(request_params);
+        $.ajax({
+            url: "/manage/list/",
+            type: "GET",
+            data: request_params,
+            success: function (result) {
+                var contents = "";
+                $.each(result.payload, function(i, item){
+                    i = i+1;
+                    var content_status = '';
+                    if (item.status == 1) {
+                        content_status = "<td><span style=\'color: #33b045\'>"+
+                                         "已上线"+
+                                         "</span></td>"
+                    }
+                    else {
+                        content_status = "<td><span style=\'color: red\'>"+
+                                         "未上线"+
+                                         "</span></td>"
+                    }
 
-        $.getJSON("/manage/list/", request_params, function(data){
-            if (data.code == 400){
-                $("#result").html("<p>参数错误</p>");
-                return;
-            }
-            else if (data.code == 500){
-                $("#result").html("<p>服务器挂了</p>");
-                return;
-            }
+                    contents += "<tr>"+
+                        "<td>"+i+"</td>" +
+                        "<td id=\"project-title\">"+item.title+"</td>" +
+                        "<td>"+item.category.name+"</td>" +
+                        "<td>"+item.volume.name+"</td>" +
+                        content_status +
+                        "<td><button type=\"button\" id=\"edit-project-button\" value=\""+ item.id +"\" class=\"button-warning button-xsmall pure-button\">编辑</button>" +
+                        "&nbsp;" +
+                        "<button type=\"button\" id=\"delete-project-submit\" value=\""+ item.id +"\" class=\"button-error button-xsmall pure-button\">删除</button></td>" +
+                    "</tr>";
+                });
+                contents = "<table class=\"pure-table\">"+
+                    "<thead>"+
+                        "<tr>"+
+                            "<th>#</th>"+
+                            "<th>Title</th>"+
+                            "<th>Category</th>"+
+                            "<th>Vol.</th>"+
+                            "<th>状态</th>"+
+                            "<th>操作</th>"+
+                        "</tr>"+
+                    "</thead>"+
+                    "<tbody>"+
+                        contents+
+                    "</tbody>"+
+                    "</table>";
+                $("#result").html(contents);
+            },
+            error: function (jqXHR) {
+               alert(jqXHR.responseJSON.message);
+            }});
+    });
 
-            var contents = "";
-            $.each(data.message, function(i, item){
-                i = i+1;
+    // {# Search #}
+    $("#search-submit").click(function() {
+        $.ajax({
+            url: "/manage/search/",
+            type: "GET",
+            data: {project_url: $("#search-project-url").val()},
+            success: function (result) {
+                if(!result.payload){
+                    $("#result").html(result.message);
+                    return;
+                }
+                var item = result.payload;
                 var content_status = '';
                 if (item.status == 1) {
                     content_status = "<td><span style=\'color: #33b045\'>"+
@@ -50,92 +109,36 @@ $(document).ready(function() {
                                      "未上线"+
                                      "</span></td>"
                 }
-
-                contents += "<tr>"+
-                    "<td>"+i+"</td>" +
-                    "<td id=\"project-title\">"+item.title+"</td>" +
-                    "<td>"+item.category.name+"</td>" +
-                    "<td>"+item.volume.name+"</td>" +
-                    content_status +
-                    "<td><button type=\"button\" id=\"edit-project-button\" value=\""+ item.id +"\" class=\"button-warning button-xsmall pure-button\">编辑</button>" +
-                    "&nbsp;" +
-                    "<button type=\"button\" id=\"delete-project-submit\" value=\""+ item.id +"\" class=\"button-error button-xsmall pure-button\">删除</button></td>" +
-                "</tr>";
-            });
-            contents = "<table class=\"pure-table\">"+
-                "<thead>"+
-                    "<tr>"+
-                        "<th>#</th>"+
-                        "<th>Title</th>"+
-                        "<th>Category</th>"+
-                        "<th>Vol.</th>"+
-                        "<th>状态</th>"+
-                        "<th>操作</th>"+
-                    "</tr>"+
-                "</thead>"+
-                "<tbody>"+
-                    contents+
-                "</tbody>"+
-                "</table>";
-            $("#result").html(contents);
-        });
-    });
-
-    // {# Search #}
-    $("#search-submit").click(function() {
-        var request_params = {
-            project_url: $("#search-project-url").val()
-        };
-
-        $.getJSON("/manage/search/", request_params, function(data){
-            if (data.code == 400) {
-                $("#result").html("<p>没找到</p>");
-                return;
-            }
-            else if (data.code == 500){
-                $("#result").html("<p>服务器挂了</p>");
-                return;
-            }
-
-            var item = data.message;
-            var content_status = '';
-            if (item.status == 1) {
-                content_status = "<td><span style=\'color: #33b045\'>"+
-                                 "已上线"+
-                                 "</span></td>"
-            }
-            else {
-                content_status = "<td><span style=\'color: red\'>"+
-                                 "未上线"+
-                                 "</span></td>"
-            }
-            $("#result").html(
-                "<table class=\"pure-table\">"+
-                "<thead>"+
-                    "<tr>"+
-                        "<th>ID</th>"+
-                        "<th>Title</th>"+
-                        "<th>Category</th>"+
-                        "<th>Vol.</th>"+
-                        "<th>状态</th>"+
-                        "<th>操作</th>"+
-                    "</tr>"+
-                "</thead>"+
-                "<tbody>"+
-                    "<tr>"+
-                        "<td>"+item.id+"</td>" +
-                        "<td id=\"project-title\">"+item.title+"</td>" +
-                        "<td>"+item.category.name+"</td>" +
-                        "<td>"+item.volume.name+"</td>" +
-                        content_status +
-                        "<td><button type=\"button\" id=\"edit-project-button\" value=\""+ item.id +"\" class=\"button-warning button-xsmall pure-button\">编辑</button>" +
-                        "&nbsp;" +
-                        "<button type=\"button\" id=\"delete-project-submit\" value=\""+ item.id +"\" class=\"button-error button-xsmall pure-button\">删除</button></td>" +
-                    "</tr>"+
-                "</tbody>"+
-                "</table>"
-            );
-        });
+                $("#result").html(
+                    "<table class=\"pure-table\">"+
+                    "<thead>"+
+                        "<tr>"+
+                            "<th>ID</th>"+
+                            "<th>Title</th>"+
+                            "<th>Category</th>"+
+                            "<th>Vol.</th>"+
+                            "<th>状态</th>"+
+                            "<th>操作</th>"+
+                        "</tr>"+
+                    "</thead>"+
+                    "<tbody>"+
+                        "<tr>"+
+                            "<td>"+item.id+"</td>" +
+                            "<td id=\"project-title\">"+item.title+"</td>" +
+                            "<td>"+item.category.name+"</td>" +
+                            "<td>"+item.volume.name+"</td>" +
+                            content_status +
+                            "<td><button type=\"button\" id=\"edit-project-button\" value=\""+ item.id +"\" class=\"button-warning button-xsmall pure-button\">编辑</button>" +
+                            "&nbsp;" +
+                            "<button type=\"button\" id=\"delete-project-submit\" value=\""+ item.id +"\" class=\"button-error button-xsmall pure-button\">删除</button></td>" +
+                        "</tr>"+
+                    "</tbody>"+
+                    "</table>"
+                );
+            },
+            error: function (jqXHR) {
+               alert(jqXHR.responseJSON.message);
+            }});
     });
 });
 
@@ -147,7 +150,7 @@ $(document).on("click", "#edit-project-button", function() {
         type: "GET",
         data: {project_id: $(this).val()},
         success: function(result) {
-            var data = result.message;
+            var data = result.payload;
             var category_list = data.category_list;
             var volume_list = data.volume_list;
             var category_str = "";
@@ -225,15 +228,6 @@ $(document).on("click", "#edit-project-button", function() {
 
 // {# 更新 project 数据 #}
 $(document).on("click", "#edit-project-submit", function() {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
-
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
-            }
-        }
-    });
     var request_params={
         project_id: $(this).val(),
         volume_id: $("#project-volume").val(),
@@ -248,15 +242,11 @@ $(document).on("click", "#edit-project-submit", function() {
         type: "PUT",
         data: request_params,
         success: function(result) {
-            if (result.code == 200){
-                $("#result").html(result.message);
-            }
-            else{
-                alert(result.message);
-            }
-        }
-    });
-
+            $("#result").html(result.message);
+        },
+        error: function (jqXHR) {
+           alert(jqXHR.responseJSON.message);
+        }});
 });
 
 // {# 生成增加 project 表单 #}
@@ -303,15 +293,6 @@ $(document).on("click", "#create-project-button", function () {
 
 // {# 新增 project 数据 #}
 $(document).on("click", "#create-project-submit", function() {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
-            }
-        }
-    });
-
     var request_params={
         volume_id: $("#project-volume").val(),
         description: $("#project-description").val(),
@@ -325,44 +306,32 @@ $(document).on("click", "#create-project-submit", function() {
         type: "POST",
         data: request_params,
         success: function(result) {
-            if (result.code == 200){
-                $("#result").html(result.message);
-            }
-            else{
-                alert(result.message);
-            }
-        }
-    });
-
+            $("#result").html(result.message);
+        },
+       error: function (jqXHR) {
+           alert(jqXHR.responseJSON.message);
+        }});
 });
 
 // {# 删除 project #}
 $(document).on("click", "#delete-project-submit", function() {
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
-            }
-        }
-    });
-
     var project_title = $(this).parent().siblings("#project-title").text();
     var project_id = $(this).val();
-    $.ajax({
-        url: '/manage/',
-        type: 'DELETE',
-        data: {
-            project_title: project_title,
-            project_id: project_id
-        },
-        success: function (result) {
-            if (result.code == 200){
+    var user_choice = window.confirm("确定删除："+ project_title+"?");
+    if(user_choice) {
+        $.ajax({
+            url: '/manage/',
+            type: 'DELETE',
+            data: {
+                project_title: project_title,
+                project_id: project_id
+            },
+            success: function (result) {
                 $("#result").html(result.message);
+            },
+            error: function (jqXHR) {
+                alert(jqXHR.responseJSON.message);
             }
-            else{
-                alert(result.message);
-            }
-        }
-    });
+        });
+    }
 });

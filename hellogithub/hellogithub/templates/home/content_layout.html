@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
+    <!-- 添加 custom.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css')}}">
+    <!-- 添加 icon -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css')}}">
+    <!-- github-fork.css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gh-fork-ribbon.css')}}">
+{% endblock %}
+
+{% block body %}
+<a target="_blank" class="github-fork-ribbon" href="https://github.com/521xueweihan/HelloGitHub" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="/">Hello GitHub</a>
+
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="/" class="pure-menu-link">首页</a></li>
+                <li class="menu-item-divided pure-menu-selected">
+                    <a href="{{ menu_url }}" class="pure-menu-link">内容</a>
+                </li>
+                <li class="pure-menu-item"><a href="/tiobe/?url={{ menu_url }}" class="pure-menu-link">TIOBE 排行榜</a></li>
+                <li class="pure-menu-item"><a href="/about/?url={{ menu_url }}" class="pure-menu-link">关于</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="header">
+            <h1>{{ page_title }}</h1>
+            <h2>兴趣是最好的老师，HelloGitHub 就是帮你找到编程的兴趣。</h2>
+        </div>
+
+        <div class="content">
+        {% block content %}{% endblock %}
+        </div>
+
+        <!-- favourite box start -->
+        <div class="favourite">
+            <form class="pure-form pure-form-aligned">
+                <fieldset>
+                    <div class="pure-control-group">
+                        <label for="project_name">名称</label>
+                        <input id="project_name" type="text" placeholder="名称">
+                        <input id="project_url" type="text" hidden="hidden">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label for="collection_name">收藏夹</label>
+                        <select id="collection_name">
+                        </select>
+                    </div>
+
+                    <div class="pure-controls">
+                        <button id="favourite_cancel" type="button" class="pure-button pure-button-default">取消</button>
+                        <button id="favourite_submit" type="button" class="pure-button pure-button-primary">提交</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <!-- favourite box end -->
+        <!-- login box start -->
+        <div class="modal">
+            <div class="modal-content">
+                <p class="center modal-body">请先登陆 HelloGitHub</p>
+                <div class="center">
+                    <button id="login_box_cancel" class="pure-button">取消</button>
+                    <a id="login_box_submit" href="/sign/in/" class="pure-button pure-button-primary">登录</a>
+                </div>
+            </div>
+        </div>
+        <!-- login box end -->
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+<!-- highlight_theme.css -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/atom-one-light.min.css') }}">
+<!-- share.css -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/share.min.css') }}">
+
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='js/collect.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+<script src="{{ url_for('static', filename='js/social-share.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/highlight.pack.js') }}"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+{% endblock %}
