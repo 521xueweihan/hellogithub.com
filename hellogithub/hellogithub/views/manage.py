@@ -68,7 +68,7 @@ def search_project():
         raise InvalidParams()
 
 
-@manage.route('/', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@manage.route('/', methods=['GET', 'POST', 'DELETE', 'PATCH'])
 def manage_content():
     """
     内容管理
@@ -100,7 +100,7 @@ def manage_content():
             return render_template('manage/content.html', page_title=u'内容管理',
                                    categorys=category_objects,
                                    volumes=volume_objects)
-    elif request.method in ['PUT', 'POST']:
+    elif request.method in ['PATCH', 'POST']:
         project_title = request.form.get('title')
         project_url = request.form.get('project_url')
         if not all([project_title, project_url]):
@@ -124,7 +124,7 @@ def manage_content():
             'update_time': datetime.now()
         }
         # 更新项目信息
-        if request.method == 'PUT':
+        if request.method == 'PATCH':
             try:
                 Content.update(**project_data).where(
                     Content.id == project_id).execute()
@@ -153,7 +153,7 @@ def manage_content():
         return jsonify(message=u'删除内容：{} 成功'.format(project_title))
 
 
-@manage.route('/category/', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@manage.route('/category/', methods=['GET', 'POST', 'DELETE', 'PATCH'])
 def manage_category():
     """
     分类管理
@@ -182,7 +182,7 @@ def manage_category():
             raise ParamsConflict(message=u'新增分类失败：{} 已存在'
                                  .format(category_name))
     # 更新分类
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
         category_name = request.form.get('category_name')
         category_id = request.form.get('category_id')
         if not category_name:
@@ -215,7 +215,7 @@ def manage_category():
             return jsonify(message=u'删除分类：{}，成功'.format(category_name))
 
 
-@manage.route('/volume/', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@manage.route('/volume/', methods=['GET', 'POST', 'DELETE', 'PATCH'])
 def manage_volume():
     """
     期数管理
@@ -245,7 +245,7 @@ def manage_volume():
         else:
             raise InvalidParams(message=u'新增一期失败：name 不能为空')
     # 更新 Vol.
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
         volume_name = request.form.get('volume_name')
         volume_id = request.form.get('volume_id')
         if not volume_name:

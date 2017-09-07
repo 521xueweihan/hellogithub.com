@@ -55,7 +55,7 @@ $(document).on("click", "#edit-volume-button", function() {
 $(document).on("click", "#edit-volume-submit", function() {
     $.ajax({
         url: "/manage/volume/",
-        type: "PUT",
+        type: "PATCH",
         data: {
             volume_id: $(this).val(),
             volume_name: $("#volume-name").val()

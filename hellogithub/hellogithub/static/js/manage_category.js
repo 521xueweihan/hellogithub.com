@@ -54,7 +54,7 @@ $(document).on("click", "#edit-category-button", function() {
 $(document).on("click", "#edit-category-submit", function() {
     $.ajax({
         url: "/manage/category/",
-        type: "PUT",
+        type: "PATCH",
         data: {
             category_id: $(this).val(),
             category_name: $("#category-name").val()

@@ -239,7 +239,7 @@ $(document).on("click", "#edit-project-submit", function() {
     };
     $.ajax({
         url: "/manage/",
-        type: "PUT",
+        type: "PATCH",
         data: request_params,
         success: function(result) {
             $("#result").html(result.message);

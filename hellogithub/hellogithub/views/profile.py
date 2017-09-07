@@ -33,7 +33,7 @@ def user_home():
                            page_title=u'个人首页')
 
 
-@profile.route('/collection/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@profile.route('/collection/', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def user_collection():
     uuid = session.get('uuid')
     collection_name = request.values.get('name')
@@ -65,7 +65,7 @@ def user_collection():
             raise ParamsConflict()
         
     # 更新收藏夹
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
         if not collection_name:
             raise InvalidParams()
         
@@ -91,7 +91,7 @@ def user_collection():
         return jsonify(message=u'删除收藏夹成功')
 
 
-@profile.route('/collection/project/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@profile.route('/collection/project/', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def collect_project():
     uuid = session.get('uuid')
     collection_id = request.values.get('collection_id')
@@ -144,7 +144,7 @@ def collect_project():
         except IntegrityError:
             raise ParamsConflict()
     # 更新收藏项目的信息
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
         if not (collection_id and project_name and collect_project_id):
             raise InvalidParams()
         

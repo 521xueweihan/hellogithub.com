@@ -202,7 +202,7 @@ def volume(input_volume):
                              .where(Volume.name == input_volume,
                                     Volume.status == 1,
                                     Content.status == 1)
-    
+
     categories = Category.select().order_by(Category.name)
     
     volumes = Volume.select()\
