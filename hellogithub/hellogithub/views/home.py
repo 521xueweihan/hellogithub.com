@@ -245,14 +245,19 @@ def about():
     return render_template('home/about.html', page_title=u'关于',
                            menu_url=content_menu_url)
 
-
 @home.route('/tiobe/')
-def tiobe_index():
+@home.route('/tiobe/<int:year>/<int:month>')
+def tiobe_index(year=None, month=None):
     content_menu_url = quote(request.args.get('url', '/').encode('utf-8'))
-
-    content_obj = TiobeContent.select()\
-                              .order_by(TiobeContent.publish_date)\
-                              .get()
+    if year and month:
+        content_obj = TiobeContent.select()\
+                                  .where(TiobeContent.publish_date.month==month,
+                                         TiobeContent.publish_date.year==year)\
+                                  .get()
+    else:
+        content_obj = TiobeContent.select() \
+                                  .order_by(TiobeContent.publish_date.desc()) \
+                                  .get()
     rank_objs = TiobeRank.select()\
                          .where(TiobeRank.publish_date.month
                                 == content_obj.publish_date.month) \
