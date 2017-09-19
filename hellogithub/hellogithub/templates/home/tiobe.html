@@ -4,6 +4,8 @@
     {{ super() }}
     <meta name="description" content="最新编程语言排名、热度、趋势- HelloGitHub、Tiobe">
     <script src="https://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/side-menu.css')}}">
 {% endblock %}
 
@@ -103,27 +105,43 @@
             });
             </script>
 
-            <h2 class="content-subhead">编程语言排行榜 TOP 50 榜单</h2>
-            <table class="pure-table">
-                <thead>
-                <tr>
-                    <th>排名</th>
-                    <th>编程语言</th>
-                    <th>等级</th>
-                    <th>年度明星语言</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for rank in ranks %}
-                <tr>
-                    <td>{{ rank.position }}</td>
-                    <td>{{ rank.language }}</td>
-                    <td>{{ rank.rating }}</td>
-                    <td>{{ rank.star or '-' }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            <h2 class="content-subhead text-center">编程语言排行榜 TOP 50 榜单</h2>
+            <div class="tiobe-table">
+                <table class="pure-table pure-table-horizontal">
+                    <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>编程语言</th>
+                        <th>流行度</th>
+                        <th>对比上月</th>
+                        <th>年度明星语言</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for rank in ranks %}
+                        {% if rank.position % 2 == 0 %}
+                        <tr class="pure-table-odd">
+                        {% else %}
+                        <tr>
+                        {% endif %}
+                        <td>{{ rank.position }}</td>
+                        <td>{{ rank.language }}</td>
+                        <td>{{ rank.rating }}</td>
+                        {% if rank.variation is none %}
+                            <td><i class="fa fa-chevron-up color-green" aria-hidden="true"></i> 新上榜</td>
+                        {% elif rank.variation < 0 %}
+                            <td><i class="fa fa-chevron-down color-red" aria-hidden="true"></i> {{ rank.variation|abs / 1000}}%</td>
+                        {% elif rank.variation == 0 %}
+                            <td>-</td>
+                        {% else %}
+                            <td><i class="fa fa-chevron-up color-green" aria-hidden="true"></i> {{ rank.variation|abs / 1000}}%</td>
+                        {% endif %}
+                        <td>{{ rank.star or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

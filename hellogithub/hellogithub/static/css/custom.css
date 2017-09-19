@@ -36,7 +36,15 @@ end Page button
 .fa-heart:hover::before {
     cursor: pointer;
 }
-
+/* table style */
+.pure-table {
+    width: 100%;
+}
+.tiobe-table {
+    margin-left: 2em;
+    margin-right: 2em;
+}
+/* end table */
 /* favourite start */
 
 .favourite {
@@ -92,7 +100,7 @@ end Page button
         border-radius: 5px;
     }
 
-.center {
+.text-center {
     text-align: center;
 }
 

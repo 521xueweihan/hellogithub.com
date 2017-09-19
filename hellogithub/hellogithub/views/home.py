@@ -249,28 +249,38 @@ def about():
 @home.route('/tiobe/<int:year>/<int:month>')
 def tiobe_index(year=None, month=None):
     content_menu_url = quote(request.args.get('url', '/').encode('utf-8'))
-    if year and month:
-        content_obj = TiobeContent.select()\
+    try:
+        if year and month:
+            content = TiobeContent.select()\
                                   .where(TiobeContent.publish_date.month==month,
                                          TiobeContent.publish_date.year==year)\
                                   .get()
-    else:
-        content_obj = TiobeContent.select() \
+        else:
+            content = TiobeContent.select() \
                                   .order_by(TiobeContent.publish_date.desc()) \
                                   .get()
-    rank_objs = TiobeRank.select()\
-                         .where(TiobeRank.publish_date.month
-                                == content_obj.publish_date.month) \
-                         .order_by(TiobeRank.position)
-    hall_objs = TiobeHall.select()
+    except DoesNotExist:
+        abort(404)
+    # variation: 当月数据对比上月 rank 数据的变化
+    ranks = TiobeRank.raw("""select r2.language, r2.position, r2.rating ,r2.rating_int - r1.rating_int as variation from
+                            (select * from tioberank where MONTH(publish_date)=%s and YEAR(publish_date)=%s) as r1
+                            right outer join (select * from tioberank where MONTH(publish_date)=%s and YEAR(publish_date)=%s) as r2
+                            on r1.language=r2.language;""", content.publish_date.month-1, content.publish_date.year, content.publish_date.month, content.publish_date.year)
+
+    halls = TiobeHall.select().where(TiobeHall.publish_date.month == content.publish_date.month,
+                                     TiobeHall.publish_date.year == content.publish_date.year)
     
-    for rank_obj in rank_objs:
-        for hall_obj in hall_objs:
-            if rank_obj.language == hall_obj.language:
-                rank_obj.star = hall_obj.year
-    page_title = content_obj.publish_date.strftime('%Y年%m月').decode('utf-8') \
-                 + u'编程语言排行榜'
+    for rank in ranks:
+        for hall in halls:
+            if rank.language == hall.language:
+                # 某个语言多次成为明星语言，年份通过'逗号'隔开
+                if hasattr(rank, 'star'):
+                    rank.star = str(rank.star)+', '+str(hall.year)
+                else:
+                    rank.star = hall.year
+
+    page_title = content.publish_date.strftime('%Y年%m月').decode('utf-8') + u'编程语言排行榜'
     
-    return render_template('home/tiobe.html', content=content_obj,
-                           ranks=rank_objs, menu_url=content_menu_url,
+    return render_template('home/tiobe.html', content=content,
+                           ranks=ranks, menu_url=content_menu_url,
                            page_title=page_title)
