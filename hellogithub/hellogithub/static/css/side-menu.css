@@ -44,7 +44,7 @@ The content `<div>` is where all your content goes.
     padding: 0 2em;
     max-width: 800px;
     margin-bottom: 50px;
-    line-height: 1.6em;
+    line-height: 2;
 }
 
 .header {
@@ -253,7 +253,7 @@ Markdown <code> style
 
 code,
 pre {
-  font-family: monospace, monospace;
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
   font-size: 1em;
 }
 
