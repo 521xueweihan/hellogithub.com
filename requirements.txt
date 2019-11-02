@@ -1,5 +1,5 @@
 markdown2 == 2.3.3
-Flask == 0.12
+Flask == 1.0
 peewee == 2.8.5
 requests == 2.18.1
 PyMySQL == 0.7.11
