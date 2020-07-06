@@ -29,20 +29,20 @@ $ cd hellogithub.com
 为了不和本地的环境冲突，推荐使用虚拟环境, 如果不想用虚拟环境也可以跳过，但是请保证当前是Python2.7环境
 ```bash
 # Anaconda(推荐)
-conda create -y -n hellogithub python=2.7
+$ conda create -y -n hellogithub python=2.7
 # 激活环境
-conda activate hellogithub
+$ conda activate hellogithub
 ```
 请将`/usr/bin/python2.7`替换成自己可以执行的python2.7执行路径
 ```bash
 # virtualenv
 # 如果没有可以先安装
-pip install virtualenv
-virtualenv -p /usr/bin/python2.7 hellogithub
+$ pip install virtualenv
+$ virtualenv -p /usr/bin/python2.7 hellogithub
 # 以防万一赋予可执行权限
-chmod +x ./hellogithub/bin/activate
+$ chmod +x ./hellogithub/bin/activate
 # 激活环境
-source ./hellogithub/bin/activate
+$ source ./hellogithub/bin/activate
 ```
 ### 安装依赖
 ```bash
@@ -52,6 +52,7 @@ $ pip install -r requirements.txt
 ```bash
 $ python hellogithub/server.py
 ```
+启动成功后就能访问 http://127.0.0.1:4000 了
 ### 开启管理后台权限
 - 登陆一次
 - 修改数据库中 admin 字段为 1
@@ -65,7 +66,7 @@ $ conda deactivate
 ```
 ```bash
 # virtualenv
-deactivate
+$ deactivate
 ```
 
 ## Todo
