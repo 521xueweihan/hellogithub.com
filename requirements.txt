@@ -6,7 +6,7 @@ PyMySQL == 0.7.11
 uWSGI == 2.0.15
 Flask-WTF == 0.14.2
 gevent == 1.2.2
-lxml == 3.8.0
+lxml == 4.6.3
 huey == 1.4.0
 redis == 2.10.6
 werkzeug==0.16.1
