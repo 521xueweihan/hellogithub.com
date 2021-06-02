@@ -1,4 +1,4 @@
-markdown2 == 2.3.3
+markdown2 == 2.4.0
 Flask == 0.12
 peewee == 2.8.5
 requests == 2.18.1
