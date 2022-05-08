@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "hellogithub.com"
+version = "0.1.0"
+description = "官网"
+authors = ["xueweihan <595666367@qq.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+Flask = "^2.1.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
