@@ -4,8 +4,15 @@ version = "0.1.0"
 description = "官网"
 authors = ["xueweihan <595666367@qq.com>"]
 
+[[tool.poetry.source]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple"
+
 [tool.poetry.dependencies]
 python = "^3.9"
+python-dotenv = "^0.20.0"
+Flask-SQLAlchemy = "^2.5.1"
+PyMySQL = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
 Flask = "^2.1.2"
