@@ -23,6 +23,7 @@
 
 <div id="inside">
     <ol class="stories list">
+        {% for repo in repos %}
         <li id="story_8srhfp" class="story">
             <div class="story_liner h-entry">
                 <div class="voters">
@@ -31,15 +32,17 @@
                 </div>
                 <div class="details">
                     <span class="link">
-                        <a href="https://github.com/microsoft/Microsoft-3D-Movie-Maker">Yandex 开源的企业级分布式 SQL 数据库</a>
+                        <a href="{{ repo.url }}">{{ repo.title }}</a>
                     </span>
                     <span class="tags">
-                        <a class="tag tag_release" title="Software releases and announcements" href="/t/release">数据库</a>
+                        {% for tag in repo.tags %}
+                            <a class="tag tag_release" href="/t/{{ tag.tid }}">{{ tag.name }}</a>
+                        {% endfor %}
                     </span>
-                    <a class="domain" href="/domain/github.com">ydb-platform/ydb</a>
+                    <a class="domain" href="{{ repo.url }}">{{ repo.name }}</a>
                     <div class="byline">
-                        <a href="/u/akselmo"><img src="https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEK6Whg0ZPBnfj6ay705PsibyqAibW1JIH3xXFjtIoTfficqtySAQuXPNf8D1eqwoY8OzMC8MJy2NFeibg/132" class="avatar" alt="akselmo avatar" loading="lazy" decoding="async" src="/avatars/akselmo-16.png" width="16" height="16"></a>
-                        <a href="/u/akselmo" class="u-author h-card new_user">卤蛋</a>
+                        <a href="/u/{{ repo.user.uid }}"><img src="{{ repo.user.avatar }}" class="avatar" alt="akselmo avatar" loading="lazy" decoding="async" width="16" height="16"></a>
+                        <a href="/u/{{ repo.user.uid }}" class="u-author h-card new_user">{{ repo.user.nickname }}</a>
                         发布于
                         <span title="2022-05-04 08:15:07 -0500">20 小时前</span>
                         |
@@ -48,15 +51,16 @@
                         </span>
                         <span class="comments_label">
                             |
-                        <a href="/s/8srhfp/microsoft_3d_movie_maker_is_now_open">评论 8</a>
+                        <a href="/">评论 {{ repo.comment_total }}</a>
                         </span>
                     </div>
                 </div>
             </div>
             <a href="/s/8srhfp/microsoft_3d_movie_maker_is_now_open"
                class="mobile_comments " style="display: none;">
-                <span>8</span>
+                <span>{{ repo.comment_total }}</span>
             </a>
+            {% endfor %}
         </li>
     </ol>
     <div class="mortag_is_mediaelink"></div>

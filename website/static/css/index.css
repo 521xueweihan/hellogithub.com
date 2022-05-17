@@ -80,7 +80,7 @@
 
 html {
     /* environment colors */
-    --color-selection-fg: HighlightText;
+    --color-selection-fg: Highlightdb.Text;
     --color-selection-bg: Highlight;
 
     /* derived colors */
